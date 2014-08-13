@@ -21,11 +21,11 @@
 
 		// default amount to move back when back key is pressed
 		defaultSeekBackwardInterval: function(media) {
-			return (media.duration * 0.05);
+			return (media.duration * 0.05 > 1 ? media.duration * 0.05 : 1);
 		},
 		// default amount to move forward when forward key is pressed
 		defaultSeekForwardInterval: function(media) {
-			return (media.duration * 0.05);
+			return (media.duration * 0.05 > 1 ? media.duration * 0.05 : 1);
 		},
 
 		// width of audio player
@@ -82,9 +82,9 @@
 							  ],
 						action: function(player, media) {
 								if (media.paused || media.ended) {
-										player.play();
+										media.play();
 								} else {
-										player.pause();
+										media.pause();
 								}
 						}
 				},
@@ -239,7 +239,8 @@
 
 				// override Apple's autoplay override for iPads
 				if (mf.isiPad && t.media.getAttribute('autoplay') !== null) {
-					t.play();
+					t.media.load();
+					t.media.play();
 				}
 
 			} else if (mf.isAndroid && t.options.AndroidUseNativeControls) {
@@ -559,9 +560,9 @@
 
 							if (t.options.clickToPlayPause) {
 								if (t.media.paused) {
-									t.play();
+									t.media.play();
 								} else {
-									t.pause();
+									t.media.pause();
 								}
 							}
 						};
@@ -661,7 +662,7 @@
 					}
 
 					if (t.options.loop) {
-						t.play();
+						t.media.play();
 					} else if (!t.options.alwaysShowControls && t.controlsEnabled) {
 						t.showControls();
 					}
@@ -709,7 +710,8 @@
 
 			// force autoplay for HTML5
 			if (autoplay && media.pluginType == 'native') {
-				t.play();
+				media.load();
+				media.play();
 			}
 
 
@@ -754,11 +756,6 @@
 					nativeHeight = t.isVideo ? ((t.media.videoHeight && t.media.videoHeight > 0) ? t.media.videoHeight : t.options.defaultVideoHeight) : t.options.defaultAudioHeight,
 					parentWidth = t.container.parent().closest(':visible').width(),
 					newHeight = t.isVideo || !t.options.autosizeProgress ? parseInt(parentWidth * nativeHeight/nativeWidth, 10) : nativeHeight;
-
-				// When we use percent, the newHeight can't be calculated so we get the container height
-				if(isNaN(newHeight)) {
-					newHeight = t.container.parent().closest(':visible').height();
-				}
 
 				if (t.container.parent()[0].tagName.toLowerCase() === 'body') { // && t.container.siblings().count == 0) {
 					parentWidth = $(window).width();
@@ -924,12 +921,14 @@
 					'<div class="mejs-overlay-button"></div>'+
 				'</div>')
 				.appendTo(layers)
-				.bind('click touchstart', function() {
-					if (t.options.clickToPlayPause) {
-						if (media.paused) {
-							t.play();
-						}
-					}
+				.click(function() {
+                    if (t.options.clickToPlayPause) {
+                        if (media.paused) {
+                            media.play();
+                        } else {
+                            media.pause();
+                        }
+                    }
 				});
 
 			/*
@@ -1061,7 +1060,6 @@
 			this.setControlsSize();
 		},
 		play: function() {
-			this.load();
 			this.media.play();
 		},
 		pause: function() {
@@ -1070,11 +1068,7 @@
 			} catch (e) {}
 		},
 		load: function() {
-			if (!this.isLoaded) {
-				this.media.load();
-			}
-
-			this.isLoaded = true;
+			this.media.load();
 		},
 		setMuted: function(muted) {
 			this.media.setMuted(muted);

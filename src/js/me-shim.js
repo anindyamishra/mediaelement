@@ -417,7 +417,7 @@ mejs.HtmlMediaElementShim = {
     } else {
       errorContainer.innerHTML = (poster !== '') ?
         '<a href="' + playback.url + '"><img src="' + poster + '" width="100%" height="100%" /></a>' :
-        '<a href="' + playback.url + '"><span>' + mejs.i18n.t('Download File') + '</span></a>';
+        '<a href="' + playback.url + '"><span>Download File</span></a>';
     }
 
 		htmlMediaElement.parentNode.insertBefore(errorContainer, htmlMediaElement);
@@ -552,7 +552,6 @@ mejs.HtmlMediaElementShim = {
 '<param name="wmode" value="transparent" />' +
 '<param name="allowScriptAccess" value="always" />' +
 '<param name="allowFullScreen" value="true" />' +
-'<param name="scale" value="default" />' + 
 '</object>';
 
 				} else {
@@ -571,7 +570,6 @@ mejs.HtmlMediaElementShim = {
 'flashvars="' + initVars.join('&') + '" ' +
 'width="' + width + '" ' +
 'height="' + height + '" ' +
-'scale="default"' + 
 'class="mejs-shim"></embed>';
 				}
 				break;
